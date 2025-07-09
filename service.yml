@@ -3,11 +3,10 @@ kind: Service
 metadata:
   name: nginx-service
 spec:
+  type: LoadBalancer
   selector:
     app: nginx
   ports:
-    - name: http
-      protocol: TCP
-      port: 80       # External port (accessible outside the cluster)
-      targetPort: 80 # Matches the containerPort in the Deployment
-  type: LoadBalancer  # Exposes Nginx externally (use "ClusterIP" for internal-only)
+    - port: 80
+      targetPort: 80
+

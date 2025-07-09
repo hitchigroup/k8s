@@ -1,18 +1,20 @@
-name: Deploy to EKS
+name: Deploy to Amazon EKS
 
 on:
   push:
-    branches: [main]  # Adjust if needed
+    branches:
+      - main
 
 jobs:
   deploy:
-    name: Deploy to EKS
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout repo
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -20,13 +22,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Update kubeconfig for EKS
+      # Step 3: Set up kubeconfig for EKS
+      - name: Set up kubeconfig
         run: |
           aws eks update-kubeconfig \
-            --region ${{ secrets.AWS_REGION }} \
-            --name ${{ secrets.EKS_CLUSTER_NAME }}
+            --region ${{ secrets.ap-south-1 }} \
+            --name ${{ secrets.dsscluster }}
 
-      - name: Deploy NGINX
+      # Step 4: Apply Kubernetes manifest
+      - name: Apply Deployment YAML
         run: |
           kubectl apply -f deployment.yml
-          kubectl apply -f service.yml  # Optional if you want public access
+          kubectl apply -f service.yml

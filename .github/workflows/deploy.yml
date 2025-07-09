@@ -28,12 +28,7 @@ jobs:
           aws eks update-kubeconfig \
             --region ${{ secrets.AWS_REGION }} \
             --name ${{ secrets.EKS_CLUSTER_NAME }}
-        - name: Configure kubectl
-        
-      - name: Configure kubectl
-        run: |
-          echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig.yaml
-          export KUBECONFIG=kubeconfig.yaml    
+        - name: Configure kubectl  
 
       # Step 4: Apply Kubernetes manifest
       - name: Apply Deployment YAML

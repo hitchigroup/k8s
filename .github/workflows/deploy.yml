@@ -26,8 +26,8 @@ jobs:
       - name: Set up kubeconfig
         run: |
           aws eks update-kubeconfig \
-            --region ${{ ap-south-1  }} \
-            --name ${{ dsscluster }}
+            --region ${{ secrets.AWS_REGION }} \
+            --name ${{ secrets.EKS_CLUSTER_NAME }}
 
       # Step 4: Apply Kubernetes manifest
       - name: Apply Deployment YAML

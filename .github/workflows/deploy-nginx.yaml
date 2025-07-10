@@ -1,0 +1,39 @@
+name: Deploy Nginx to Kubernetes
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    # For AWS EKS (adjust for other providers)
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2  # Change to your region
+        
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v3
+      
+    # Alternative approach using kubeconfig
+    - name: Set up kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > ~/.kube/config
+        
+    - name: Deploy Nginx
+      run: |
+        kubectl apply -f manifests/nginx-deployment.yaml
+        kubectl apply -f manifests/nginx-service.yaml
+        kubectl apply -f manifests/nginx-ingress.yaml
+        kubectl get pods -n default
